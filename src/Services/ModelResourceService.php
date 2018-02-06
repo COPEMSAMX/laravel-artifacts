@@ -2,7 +2,6 @@
 
 namespace Gregoriohc\Artifacts\Services;
 
-use Gregoriohc\Artifacts\Artifacts;
 use Gregoriohc\Seedable\IsSeedable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,24 +9,29 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 
-abstract class ModelResourceService extends ResourceService
+class ModelResourceService extends ResourceService
 {
     use IsSeedable;
 
     /**
+     * @var string
+     */
+    protected $resourceNamespaceCode = 'models';
+
+    /**
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function query()
+    public function query()
     {
-        return call_user_func([static::resource(), 'query']);
+        return call_user_func([$this->resource(), 'query']);
     }
 
     /**
      * @return \Gregoriohc\Artifacts\Support\Concerns\IsResourceable
      */
-    public static function resource()
+    public function resource()
     {
-        $resourceClass = static::$resourceClass ?: Artifacts::namespacedClass('models', static::bynameStudly());
+        $resourceClass = $this->resourceClass;
 
         return new $resourceClass;
     }
@@ -175,5 +179,13 @@ abstract class ModelResourceService extends ResourceService
         }
 
         return $this->query()->$method(...$parameters);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function seedData()
+    {
+        return collect([]);
     }
 }

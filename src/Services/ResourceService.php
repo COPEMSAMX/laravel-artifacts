@@ -6,24 +6,44 @@ use Gregoriohc\Artifacts\Artifacts;
 
 class ResourceService extends Service
 {
-    protected static $resourceClass;
+    /**
+     * @var string
+     */
+    protected $resourceNamespaceCode = 'resources';
+
+    /**
+     * @var string
+     */
+    protected $resourceClass;
+
+    /**
+     * ResourceService constructor.
+     * @param array $options
+     */
+    public function __construct($options = [])
+    {
+        parent::__construct($options);
+
+        $resource = $this->options->get('resource', static::bynameStudly());
+        $this->resourceClass = Artifacts::namespacedClass($this->resourceNamespaceCode, $resource);
+    }
 
     /**
      * @return \Gregoriohc\Artifacts\Resources\Builder
      */
-    public static function query()
+    public function query()
     {
-        return call_user_func([static::resource(), 'query']);
+        return call_user_func([$this->resource(), 'query']);
     }
 
     /**
      * @return \Gregoriohc\Artifacts\Resources\Resource
      */
-    public static function resource()
+    public function resource()
     {
-        static::$resourceClass = static::$resourceClass ?: Artifacts::namespacedClass('resources', static::bynameStudly());
+        $resourceClass = $this->resourceClass;
 
-        return new static::$resourceClass();
+        return new $resourceClass();
     }
 
     /**
@@ -61,9 +81,9 @@ class ResourceService extends Service
             $resource = $this->query()->find($data[$this->resource()->mainKey()]);
         }
 
-        static::$resourceClass = static::$resourceClass ?: Artifacts::namespacedClass('resources', static::bynameStudly());
+        $resourceClass = $this->resourceClass;
 
-        return $resource ?: new static::$resourceClass($data);
+        return $resource ?: new $resourceClass($data);
     }
 
     /**

@@ -3,24 +3,31 @@
 namespace Gregoriohc\Artifacts\Services;
 
 use Gregoriohc\Byname\HasByname;
+use Illuminate\Config\Repository;
 use Illuminate\Support\Traits\Macroable;
 
-abstract class Service
+class Service
 {
     use HasByname, Macroable;
+
+    /**
+     * @var Repository
+     */
+    protected $options;
+
+    /**
+     * Service constructor.
+     * @param array $options
+     */
+    public function __construct($options = [])
+    {
+        $this->options = new Repository($options);
+    }
 
     /**
      * @return string
      */
     protected static function bynameSuffix() {
         return 'Service';
-    }
-
-    /**
-     * @return static
-     */
-    public static function instance()
-    {
-        return new static();
     }
 }
