@@ -32,7 +32,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/artifacts.php', 'artifacts');
 
-        $this->app['artifacts'] = $this->app->share(function ($app) {
+        $this->app->singleton('artifacts', function ($app) {
             return new Artifacts();
         });
     }
