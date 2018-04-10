@@ -2,6 +2,7 @@
 
 namespace Gregoriohc\Artifacts;
 
+use Gregoriohc\Artifacts\Database\Eloquent\BuilderMacros;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -21,6 +22,8 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         $this->publishes([__DIR__.'/../config/artifacts.php' => config_path('artifacts.php')]);
+
+        BuilderMacros::boot();
     }
 
     /**
