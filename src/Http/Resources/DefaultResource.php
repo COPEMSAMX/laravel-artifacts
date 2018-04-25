@@ -28,7 +28,7 @@ class DefaultResource extends Resource
         }
 
         foreach($this->resource->resourceDefaultIncludes() as $include) {
-            $data[$include] = call_user_func([$this, 'include' . $include]);
+            $data[snake_case($include)] = call_user_func([$this, 'include' . $include]);
         }
 
         foreach (array_keys($data) as $attribute) {

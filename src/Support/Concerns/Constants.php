@@ -20,7 +20,7 @@ trait Constants
      */
     public static function constants($prefix = null)
     {
-        $constants = (new ReflectionClass(__CLASS__))->getConstants();
+        $constants = (new ReflectionClass(static::class))->getConstants();
 
         if (!is_null($prefix)) {
             $constants = array_filter($constants, function ($key) use ($prefix) {

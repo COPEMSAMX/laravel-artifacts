@@ -96,6 +96,24 @@ class ResourceService extends Service
     }
 
     /**
+     * @param \Gregoriohc\Artifacts\Support\Concerns\IsResourceable $item
+     * @return mixed
+     */
+    public function transformResourceItem($item)
+    {
+        return call_user_func_array([$this->resource()->transformerClass(), 'make'], [$item]);
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $collection
+     * @return mixed
+     */
+    public function transformResourceCollection($collection)
+    {
+        return call_user_func_array([$this->resource()->transformerClass(), 'collection'], [$collection]);
+    }
+
+    /**
      * @param string $method
      * @param array $parameters
      * @return mixed

@@ -19,6 +19,11 @@ class ModelResourceService extends ResourceService
     protected $resourceNamespaceCode = 'models';
 
     /**
+     * @var array
+     */
+    protected $includes = [];
+
+    /**
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query()
@@ -43,7 +48,7 @@ class ModelResourceService extends ResourceService
     public function findAll($perPage = 10)
     {
         if (!is_null($perPage)) {
-            return $this->query()->with($this->resource()->resourceDefaultIncludes())->paginate($perPage);
+            return $this->query()->with($this->getIncludes())->paginate($perPage);
         }
 
         return $this->query()->get();
@@ -56,7 +61,29 @@ class ModelResourceService extends ResourceService
      */
     public function findBy($column, $value)
     {
-        return $this->query()->with($this->resource()->resourceDefaultIncludes())->where($column, $value);
+        return $this->query()->with($this->getIncludes())->where($column, $value);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getIncludes()
+    {
+        return array_merge(
+            $this->resource()->resourceDefaultIncludes(),
+            $this->includes
+        );
+    }
+
+    /**
+     * @param array $includes
+     * @return $this
+     */
+    public function setIncludes($includes)
+    {
+        $this->includes = $includes;
+
+        return $this;
     }
 
     /**
@@ -162,6 +189,13 @@ class ModelResourceService extends ResourceService
         return $this->create($item);
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function seedData()
+    {
+        return collect([]);
+    }
 
     /**
      * @param string $method
@@ -173,19 +207,14 @@ class ModelResourceService extends ResourceService
         if (0 === strpos($method, 'findFirstBy')) {
             $column = snake_case(substr($method, strlen('findFirstBy')));
             return $this->findBy($column, $parameters[0])->first();
+        } elseif (0 === strpos($method, 'findOrFailBy')) {
+            $column = snake_case(substr($method, strlen('findOrFailBy')));
+            return $this->findBy($column, $parameters[0])->firstOrFail();
         } elseif (0 === strpos($method, 'findBy')) {
             $column = snake_case(substr($method, strlen('findBy')));
             return $this->findBy($column, $parameters[0])->get();
         }
 
         return $this->query()->$method(...$parameters);
-    }
-
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    public function seedData()
-    {
-        return collect([]);
     }
 }

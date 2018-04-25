@@ -12,7 +12,7 @@ trait HasResource
      */
     protected function item($item)
     {
-        return call_user_func_array([$this->service()->resource()->transformerClass(), 'make'], [$item]);
+        return $this->service()->transformResourceItem($item);
     }
 
     /**
@@ -21,7 +21,7 @@ trait HasResource
      */
     protected function collection($collection)
     {
-        return call_user_func_array([$this->service()->resource()->transformerClass(), 'collection'], [$collection]);
+        return $this->service()->transformResourceCollection($collection);
     }
 
     /**
