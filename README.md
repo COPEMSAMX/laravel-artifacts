@@ -1,4 +1,4 @@
-# laravel-artifacts
+# Laravel Artifacts [WIP]
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
@@ -7,10 +7,7 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-**Note:** Replace ```Gregorio Hernández Caso``` ```gregoriohc``` ```https://github.com/gregoriohc``` ```gregoriohc@gmail.com``` ```gregoriohc``` ```laravel-artifacts``` ```Laravel common files used on some of my projects``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line. You can run `$ php prefill.php` in the command line to make all replacements at once. Delete the file prefill.php as well.
-
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what
-PSRs you support to avoid any confusion with users and contributors.
+Package in development status. Not ready for use.
 
 ## Install
 
@@ -18,19 +15,6 @@ Via Composer
 
 ``` bash
 $ composer require gregoriohc/laravel-artifacts
-```
-
-## Usage
-
-``` php
-$skeleton = new Gregoriohc\Artifacts();
-echo $skeleton->echoPhrase('Hello, Gregorio!');
-```
-
-## Testing
-
-``` bash
-$ composer test
 ```
 
 ## Change log
@@ -52,7 +36,6 @@ You're free to use this package, but if it makes it to your production environme
 ## Credits
 
 - [Gregorio Hernández Caso][link-author]
-- [All Contributors][link-contributors]
 
 ## License
 
@@ -71,4 +54,3 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-code-quality]: https://scrutinizer-ci.com/g/gregoriohc/laravel-artifacts
 [link-downloads]: https://packagist.org/packages/gregoriohc/laravel-artifacts
 [link-author]: https://github.com/gregoriohc
-[link-contributors]: ../../contributors
