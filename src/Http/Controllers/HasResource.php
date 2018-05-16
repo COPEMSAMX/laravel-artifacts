@@ -42,13 +42,39 @@ trait HasResource
      */
     public function show($id, Request $request)
     {
-        /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable|null $data */
-        $data = $this->service()->findBy($this->service()->resource()->mainKey(), $id)->first();
+        /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable|null $resource */
+        $resource = $this->service()->findBy($this->service()->resource()->mainKey(), $id)->first();
 
-        if ($data) {
-            return $this->item($data);
+        if ($resource) {
+            return $this->item($resource);
         }
 
         return response()->json(null, 400);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update($id, Request $request)
+    {
+        /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable|null $resource */
+        $resource = $this->service()->findBy($this->service()->resource()->mainKey(), $id)->first();
+
+        $resource = $this->service()->update($resource, $request->all());
+
+        return $this->item($resource);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable $resource */
+        $resource = $this->service()->create($request->all());
+
+        return $this->item($resource);
     }
 }
