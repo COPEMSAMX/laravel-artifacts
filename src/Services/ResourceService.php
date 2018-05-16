@@ -87,6 +87,18 @@ class ResourceService extends Service
     }
 
     /**
+     * @param \Gregoriohc\Artifacts\Support\Concerns\IsResourceable $resource
+     * @param array $data
+     * @return \Gregoriohc\Artifacts\Resources\Resource
+     */
+    public function update($resource, $data)
+    {
+        $resource->setData($data);
+
+        return $resource;
+    }
+
+    /**
      * @param array $data
      * @return \Gregoriohc\Artifacts\Resources\Resource
      */
