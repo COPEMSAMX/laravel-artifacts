@@ -45,13 +45,18 @@ class ModelResourceService extends ResourceService
      * @param int $perPage
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Pagination\AbstractPaginator|\Illuminate\Database\Eloquent\Collection
      */
-    public function findAll($perPage = 10)
+    public function findAll($perPage = 10, $orderByColumn = null, $orderByDirection = 'asc')
     {
+        $query = $this
+            ->query()
+            ->orderBy($orderByColumn ?: $this->resource()->mainKey(), $orderByDirection)
+            ->with($this->getIncludes());
+
         if (!is_null($perPage)) {
-            return $this->query()->with($this->getIncludes())->paginate($perPage);
+            return $query->paginate($perPage);
         }
 
-        return $this->query()->get();
+        return $query->get();
     }
 
     /**
