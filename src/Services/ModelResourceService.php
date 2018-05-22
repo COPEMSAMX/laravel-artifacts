@@ -41,16 +41,45 @@ class ModelResourceService extends ResourceService
         return new $resourceClass;
     }
 
+    private function processOptions($options)
+    {
+        if (!isset($options['filters'])) $options['filters'] = [];
+        if (!isset($options['order'])) $options['order'] = [];
+        if (!isset($options['order']['column'])) $options['order']['column'] = $this->resource()->mainKey();
+        if (!isset($options['order']['direction'])) $options['order']['direction'] = 'asc';
+
+        return $options;
+    }
+
     /**
      * @param int $perPage
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Pagination\AbstractPaginator|\Illuminate\Database\Eloquent\Collection
      */
-    public function findAll($perPage = 10, $orderByColumn = null, $orderByDirection = 'asc')
+    public function findAll($perPage = 10, $options = [])
     {
+        $options = $this->processOptions($options);
+
         $query = $this
             ->query()
-            ->orderBy($orderByColumn ?: $this->resource()->mainKey(), $orderByDirection)
-            ->with($this->getIncludes());
+            ->with($this->getIncludes())
+            ->orderBy($options['order']['column'], $options['order']['direction']);
+
+        if (isset($options['filters'])) {
+            foreach ($options['filters'] as $filter => $filterOptions) {
+                if (isset($filterOptions['value'])) {
+                    $query->where($filter, $filterOptions['operator'], $filterOptions['value']);
+                }
+            }
+        }
+
+        if (isset($options['search']) && !empty($options['search']['query'])) {
+            $search = $options['search'];
+            $query->where(function($query) use ($search) {
+                foreach ($search['attributes'] as $attribute) {
+                    $query->orWhere($attribute, 'LIKE', "%{$search['query']}%");
+                }
+            });
+        }
 
         if (!is_null($perPage)) {
             return $query->paginate($perPage);
