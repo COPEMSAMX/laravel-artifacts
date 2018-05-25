@@ -67,7 +67,17 @@ class ModelResourceService extends ResourceService
         if (isset($options['filters'])) {
             foreach ($options['filters'] as $filter => $filterOptions) {
                 if (isset($filterOptions['value'])) {
-                    $query->where($filter, $filterOptions['operator'], $filterOptions['value']);
+                    $parts = explode('.', $filter);
+                    $filterColumn = array_pop($parts);
+                    $relation = implode('.', $parts);
+                    $filterOptions['operator'] = array_get($filterOptions, 'opertor', '=');
+                    if (empty($relation)) {
+                        $query->where($filterColumn, $filterOptions['operator'], $filterOptions['value']);
+                    } else {
+                        $query->whereHas($relation, function($query) use ($filterColumn, $filterOptions) {
+                            $query->where($filterColumn, $filterOptions['operator'], $filterOptions['value']);
+                        });
+                    }
                 }
             }
         }
