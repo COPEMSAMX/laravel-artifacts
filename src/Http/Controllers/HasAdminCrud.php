@@ -332,6 +332,7 @@ trait HasAdminCrud
         $config['search']['query'] = $request->get('q');
         $config['search']['route'] = Route::currentRouteName();
         $config['search']['routeParameters'] = Route::current()->parameters;
+        $config['search']['filters'] = array_get($config['search'], 'filters', []);
 
         return $config;
     }
