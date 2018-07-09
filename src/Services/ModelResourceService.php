@@ -53,9 +53,25 @@ class ModelResourceService extends ResourceService
 
     /**
      * @param int $perPage
+     * @param array $options
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Pagination\AbstractPaginator|\Illuminate\Database\Eloquent\Collection
      */
     public function findAll($perPage = 10, $options = [])
+    {
+        $query = $this->queryFindAll($options);
+
+        if (!is_null($perPage)) {
+            return $query->paginate($perPage);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * @param array $options
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function queryFindAll($options = [])
     {
         $options = $this->processOptions($options);
 
@@ -70,7 +86,7 @@ class ModelResourceService extends ResourceService
                     $parts = explode('.', $filter);
                     $filterColumn = array_pop($parts);
                     $relation = implode('.', $parts);
-                    $filterOptions['operator'] = array_get($filterOptions, 'opertor', '=');
+                    $filterOptions['operator'] = array_get($filterOptions, 'operator', '=');
                     if (empty($relation)) {
                         $query->where($filterColumn, $filterOptions['operator'], $filterOptions['value']);
                     } else {
@@ -91,11 +107,7 @@ class ModelResourceService extends ResourceService
             });
         }
 
-        if (!is_null($perPage)) {
-            return $query->paginate($perPage);
-        }
-
-        return $query->get();
+        return $query;
     }
 
     /**
