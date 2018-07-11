@@ -126,10 +126,7 @@ trait HasAdminCrud
 
         $this->service()->create($request->only(array_keys($config['columns'])));
 
-        $routeParameters = Route::current()->parameters;
-        array_pop($routeParameters);
-
-        return redirect()->route($this->routeName('index'), $routeParameters);
+        return redirect()->route($this->routeName('index'), Route::current()->parameters);
     }
 
     /**
@@ -291,6 +288,12 @@ trait HasAdminCrud
         $config['parent_relation'] = array_get($config, 'parent_relation', []);
         $config['parent_relation']['type'] = array_get($config['parent_relation'], 'type', 'belongs_to');
         $config['parent_relation']['attribute'] = array_get($config['parent_relation'], 'attribute', null);
+        $config['parent_relation']['model'] = array_get($config['parent_relation'], 'attribute', null);
+        if ($config['parent_relation']['model'] && !$config['parent_relation']['attribute']) {
+            $config['parent_relation']['attribute'] = snake_case(class_basename($config['parent_relation']['model']));
+        } elseif ($config['parent_relation']['attribute'] && !$config['parent_relation']['model']) {
+            $config['parent_relation']['model'] = 'App\\Models\\' . studly_case($config['parent_relation']['attribute']);
+        }
 
         // Filters
         $config['filters'] = isset($config['filters']) ? $config['filters'] : [];
@@ -375,9 +378,48 @@ trait HasAdminCrud
     {
         $config = $this->formConfig($request);
 
+        // Parent relation
+        $config['parent_relation'] = array_get($config, 'parent_relation', []);
+        $config['parent_relation']['type'] = array_get($config['parent_relation'], 'type', 'belongs_to');
+        $config['parent_relation']['attribute'] = array_get($config['parent_relation'], 'attribute', null);
+        $config['parent_relation']['model'] = array_get($config['parent_relation'], 'model', null);
+        if ($config['parent_relation']['model'] && !$config['parent_relation']['attribute']) {
+            $config['parent_relation']['attribute'] = snake_case(class_basename($config['parent_relation']['model']));
+        } elseif ($config['parent_relation']['attribute'] && !$config['parent_relation']['model']) {
+            $config['parent_relation']['model'] = 'App\\Models\\' . studly_case($config['parent_relation']['attribute']);
+        }
+
         // Columns
         $config['columns'] = array_get($config, 'columns', []);
         $columns = $config['columns'];
+
+        if (isset($config['parent_relation'])) {
+            $idParent = end(Route::current()->parameters);
+            $routerParametersKeys = array_keys(Route::current()->parameters);
+            $attributeParent = end($routerParametersKeys);
+            $modelParent = 'App\\Models\\' . studly_case($attributeParent);
+            switch ($config['parent_relation']['type']) {
+                case 'morphs': {
+                    $columns[$config['parent_relation']['attribute'] . '_type'] = [
+                        'type' => 'hidden',
+                        'default' => $modelParent,
+                    ];
+                    $columns[$config['parent_relation']['attribute'] . '_id'] = [
+                        'type' => 'hidden',
+                        'default' => $idParent,
+                    ];
+                    break;
+                }
+                case 'belongs_to': {
+                    $columns[$config['parent_relation']['attribute'] . '_id'] = [
+                        'type' => 'hidden',
+                        'default' => $idParent,
+                    ];
+                    break;
+                }
+            }
+        }
+
         $processedColumns = [];
         foreach ($columns as $key => $value) {
             $key = is_numeric($key) ? $value : $key;
@@ -385,8 +427,10 @@ trait HasAdminCrud
             $value['type'] = array_get($value, 'type', 'text');
             $value['select_options'] = array_get($value, 'select_options', []);
             $value['select_option_null'] = array_get($value, 'select_option_null', false);
+            $value['default'] = array_get($value, 'default');
             $processedColumns[$key] = $value;
         }
+
         unset($processedColumns['id']);
         $config['columns'] = $processedColumns;
 
