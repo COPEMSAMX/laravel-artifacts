@@ -275,6 +275,11 @@ trait HasAdminCrud
                     return $value;
                 };
             }
+            $value['show'] = array_get($value, 'show', function() {
+                return function($item, $key, $options) {
+                    return true;
+                };
+            });
             $value['modalData'] = array_get($value, 'modalData', []);
             $processedRowActions[$key] = $value;
         }
