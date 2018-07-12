@@ -86,7 +86,14 @@ trait HasAdminCrud
         $item = $this->service()->findFirstById($id);
         $config = $this->processedFormConfig($request);
 
-        $item->update($request->only(array_keys($config['columns'])));
+        $data = $request->only(array_keys($config['columns']));
+        foreach ($config['columns'] as $column => $options) {
+            if ('flags' == $options['type'] && !isset($data[$column])) {
+                $data[$column] = [];
+            }
+        }
+
+        $item->update($data);
 
         $routeParameters = Route::current()->parameters;
         array_pop($routeParameters);
@@ -431,6 +438,7 @@ trait HasAdminCrud
             if (!is_array($value)) $value = [];
             $value['type'] = array_get($value, 'type', 'text');
             $value['select_options'] = array_get($value, 'select_options', []);
+            $value['select_multiple'] = array_get($value, 'select_multiple', false);
             $value['select_option_null'] = array_get($value, 'select_option_null', false);
             $value['default'] = array_get($value, 'default');
             $processedColumns[$key] = $value;
