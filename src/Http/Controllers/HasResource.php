@@ -2,6 +2,7 @@
 
 namespace Gregoriohc\Artifacts\Http\Controllers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 trait HasResource
@@ -56,10 +57,28 @@ trait HasResource
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
+    public function store(Request $request)
+    {
+        /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable $resource */
+        $resource = $this->service()->create($request->all());
+
+        return $this->item($resource);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update($id, Request $request)
     {
         /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable|null $resource */
         $resource = $this->service()->findBy($this->service()->resource()->mainKey(), $id)->first();
+
+        if (!$resource) {
+            throw (new ModelNotFoundException)->setModel(
+                $this->service()->resourceClass(), $id
+            );
+        }
 
         $resource = $this->service()->update($resource, $request->all());
 
@@ -70,11 +89,19 @@ trait HasResource
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function destroy($id, Request $request)
     {
-        /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable $resource */
-        $resource = $this->service()->create($request->all());
+        /** @var \Gregoriohc\Artifacts\Support\Concerns\IsResourceable|null $resource */
+        $resource = $this->service()->findBy($this->service()->resource()->mainKey(), $id)->first();
 
-        return $this->item($resource);
+        if (!$resource) {
+            throw (new ModelNotFoundException)->setModel(
+                $this->service()->resourceClass(), $id
+            );
+        }
+
+        $resource = $this->service()->delete($resource, $request->all());
+
+        return;
     }
 }

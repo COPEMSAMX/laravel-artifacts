@@ -47,6 +47,14 @@ class ResourceService extends Service
     }
 
     /**
+     * @return string
+     */
+    public function resourceClass()
+    {
+        return $this->resourceClass;
+    }
+
+    /**
      * @param int $perPage
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Pagination\AbstractPaginator|\Illuminate\Support\Collection
      */

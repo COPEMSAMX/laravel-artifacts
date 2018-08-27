@@ -240,6 +240,18 @@ class ModelResourceService extends ResourceService
     }
 
     /**
+     * @param \Gregoriohc\Artifacts\Models\Model $model
+     * @param array $data
+     * @return \Gregoriohc\Artifacts\Models\Model
+     */
+    public function delete($model, $data)
+    {
+        $model->delete();
+
+        return $model;
+    }
+
+    /**
      * @param array $item
      * @return \Gregoriohc\Artifacts\Models\Model
      */
