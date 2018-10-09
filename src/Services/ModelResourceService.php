@@ -102,6 +102,9 @@ class ModelResourceService extends ResourceService
             $search = $options['search'];
             $query->where(function($query) use ($search) {
                 foreach ($search['attributes'] as $attribute) {
+                    if (false === strpos($attribute, '.')) {
+                        $attribute = $this->resource()->getTable() . '.' . $attribute;
+                    }
                     $query->orWhere($attribute, 'LIKE', "%{$search['query']}%");
                 }
             });
