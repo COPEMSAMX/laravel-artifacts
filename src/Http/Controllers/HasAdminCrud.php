@@ -17,6 +17,10 @@ trait HasAdminCrud
     {
         $config = $this->processedIndexConfig($request);
 
+        if ($config['authorize']) {
+            $this->authorize('index', $this->service()->resourceClass());
+        }
+
         return view($this->viewName(__FUNCTION__), [
             'modelSingular' => $this->modelSingular(),
             'modelPlural' => $this->modelPlural(),
@@ -42,11 +46,17 @@ trait HasAdminCrud
 
         $config = $this->processedShowConfig($request);
 
+        $item = $this->service()->findFirstById($id);
+
+        if ($config['authorize']) {
+            $this->authorize('view', $item);
+        }
+
         return view($this->viewName(__FUNCTION__), [
             'modelSingular' => $this->modelSingular(),
             'modelPlural' => $this->modelPlural(),
             'title' => trans('models.' . $this->modelPlural() . '.plural'),
-            'item' => $this->service()->findFirstById($id),
+            'item' => $item,
             'config' => $config,
         ]);
     }
@@ -66,11 +76,17 @@ trait HasAdminCrud
                 'form_action_route_parameters' => Route::current()->parameters,
             ];
 
+        $item = $this->service()->findFirstById($id);
+
+        if ($config['authorizeEdit']) {
+            $this->authorize('update', $item);
+        }
+
         return view($this->viewName(__FUNCTION__), [
             'modelSingular' => $this->modelSingular(),
             'modelPlural' => $this->modelPlural(),
             'title' => trans('models.' . $this->modelPlural() . '.plural'),
-            'item' => $this->service()->findFirstById($id),
+            'item' => $item,
             'config' => $config,
         ]);
     }
@@ -85,6 +101,10 @@ trait HasAdminCrud
         /** @var Model $item */
         $item = $this->service()->findFirstById($id);
         $config = $this->processedFormConfig($request);
+
+        if ($config['authorizeEdit']) {
+            $this->authorize('update', $item);
+        }
 
         $data = $request->only(array_keys($config['columns']));
         foreach ($config['columns'] as $column => $options) {
@@ -114,6 +134,10 @@ trait HasAdminCrud
                 'form_action_route_parameters' => Route::current()->parameters,
             ];
 
+        if ($config['authorizeCreate']) {
+            $this->authorize('create', $this->service()->resourceClass());
+        }
+
         return view($this->viewName(__FUNCTION__), [
             'modelSingular' => $this->modelSingular(),
             'modelPlural' => $this->modelPlural(),
@@ -130,6 +154,10 @@ trait HasAdminCrud
     public function store(Request $request)
     {
         $config = $this->processedFormConfig($request);
+
+        if ($config['authorizeCreate']) {
+            $this->authorize('create', $this->service()->resourceClass());
+        }
 
         $this->service()->create($request->only(array_keys($config['columns'])));
 
@@ -349,6 +377,9 @@ trait HasAdminCrud
         $config['search']['routeParameters'] = Route::current()->parameters;
         $config['search']['filters'] = array_get($config['search'], 'filters', []);
 
+        // Authorize
+        $config['authorize'] = array_get($config, 'authorize', isset($this->requiresAuthorization) ? $this->requiresAuthorization : false);
+
         return $config;
     }
 
@@ -378,6 +409,9 @@ trait HasAdminCrud
             $processedColumns[$key] = $value;
         }
         $config['columns'] = $processedColumns;
+
+        // Authorize
+        $config['authorize'] = array_get($config, 'authorize', isset($this->requiresAuthorization) ? $this->requiresAuthorization : false);
 
         return $config;
     }
@@ -446,6 +480,10 @@ trait HasAdminCrud
 
         unset($processedColumns['id']);
         $config['columns'] = $processedColumns;
+
+        // Authorize
+        $config['authorizeEdit'] = array_get($config, 'authorizeEdit', isset($this->requiresAuthorization) ? $this->requiresAuthorization : false);
+        $config['authorizeCreate'] = array_get($config, 'authorizeCreate', isset($this->requiresAuthorization) ? $this->requiresAuthorization : false);
 
         return $config;
     }
