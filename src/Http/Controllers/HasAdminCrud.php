@@ -3,6 +3,7 @@
 namespace Gregoriohc\Artifacts\Http\Controllers;
 
 use Gregoriohc\Artifacts\Models\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Route;
 use Illuminate\Support\Facades\View;
@@ -115,6 +116,12 @@ trait HasAdminCrud
 
         $item->update($data);
 
+        foreach ($config['columns'] as $column => $options) {
+            if ('select' == $options['type'] && $options['select_multiple'] && $item->$column instanceof Collection) {
+                $item->$column()->sync($data[$column]);
+            }
+        }
+
         $routeParameters = Route::current()->parameters;
         array_pop($routeParameters);
 
@@ -159,7 +166,14 @@ trait HasAdminCrud
             $this->authorize('create', $this->service()->resourceClass());
         }
 
-        $this->service()->create($request->only(array_keys($config['columns'])));
+        $item = $this->service()->create($request->only(array_keys($config['columns'])));
+
+        $data = $request->only(array_keys($config['columns']));
+        foreach ($config['columns'] as $column => $options) {
+            if ('select' == $options['type'] && $options['select_multiple'] && $item->$column instanceof Collection) {
+                $item->$column()->sync($data[$column]);
+            }
+        }
 
         return redirect()->route($this->routeName('index'), Route::current()->parameters);
     }
