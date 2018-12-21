@@ -118,7 +118,7 @@ trait HasAdminCrud
 
         foreach ($config['columns'] as $column => $options) {
             if ('select' == $options['type'] && $options['select_multiple'] && $item->$column instanceof Collection) {
-                $item->$column()->sync($data[$column]);
+                $item->$column()->sync(array_get($data, $column, []));
             }
         }
 
