@@ -170,7 +170,7 @@ trait HasAdminCrud
 
         $data = $request->only(array_keys($config['columns']));
         foreach ($config['columns'] as $column => $options) {
-            if ('select' == $options['type'] && $options['select_multiple'] && $item->$column instanceof Collection) {
+            if ('select' == $options['type'] && $options['select_multiple'] && array_key_exists($column, $data) && $item->$column instanceof Collection) {
                 $item->$column()->sync($data[$column]);
             }
         }
