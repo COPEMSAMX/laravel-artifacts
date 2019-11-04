@@ -88,7 +88,7 @@ class ModelResourceService extends ResourceService
                     $relation = implode('.', $parts);
                     $filterOptions['operator'] = array_get($filterOptions, 'operator', '=');
                     if (empty($relation)) {
-                        $query->where($filterColumn, $filterOptions['operator'], $filterOptions['value']);
+                        $query->where($this->resource()->getTable() . '.' . $filterColumn, $filterOptions['operator'], $filterOptions['value']);
                     } else {
                         $query->whereHas($relation, function($query) use ($filterColumn, $filterOptions) {
                             $query->where($filterColumn, $filterOptions['operator'], $filterOptions['value']);
