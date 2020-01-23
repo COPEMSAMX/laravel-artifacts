@@ -3,6 +3,7 @@
 namespace Gregoriohc\Artifacts\Services;
 
 use Gregoriohc\Seedable\IsSeedable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -101,16 +102,44 @@ class ModelResourceService extends ResourceService
         if (isset($options['search']) && !empty($options['search']['query'])) {
             $search = $options['search'];
             $query->where(function($query) use ($search) {
+                $resourceTable = $this->resource()->getTable();
                 foreach ($search['attributes'] as $attribute) {
                     if (false === strpos($attribute, '.')) {
-                        $attribute = $this->resource()->getTable() . '.' . $attribute;
+                        $attribute = $resourceTable . '.' . $attribute;
                     }
-                    $query->orWhere($attribute, 'LIKE', "%{$search['query']}%");
+                    $attributeParts = explode('.', $attribute);
+                    if (2 == count($attributeParts) && $resourceTable === $attributeParts[0]) {
+                        $query->orWhere($attribute, 'LIKE', "%{$search['query']}%");
+                    } else {
+                        $this->addRelationSearch($query, $attributeParts, $search['query']);
+                        /** @var Builder $query */
+                    }
                 }
             });
         }
 
         return $query;
+    }
+
+    /**
+     * @param Builder $query
+     * @param array $attributeParts
+     * @param string $terms
+     */
+    public function addRelationSearch(&$query, $attributeParts, $terms)
+    {
+        $query->orWhere(function($query) use ($attributeParts, $terms) {
+            $relation = array_shift($attributeParts);
+            $query->whereHas($relation, function($relationQuery) use ($attributeParts, $terms) {
+                /** @var Builder $relationQuery */
+                if (count($attributeParts) > 1) {
+                    $this->addRelationSearch($relationQuery, $attributeParts, $terms);
+                } else {
+                    $attribute = array_shift($attributeParts);
+                    $relationQuery->where($attribute, 'LIKE', "%{$terms}%");
+                }
+            });
+        });
     }
 
     /**
