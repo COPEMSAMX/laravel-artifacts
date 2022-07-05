@@ -6,7 +6,7 @@
         "gregoriohc",
         "laravel-artifacts"
     ],
-    "homepage": "https://github.com/gregoriohc/laravel-artifacts",
+    "homepage": "https://github.com/COPEMSAMX/laravel-artifacts",
     "license": "MIT",
     "authors": [
         {
@@ -14,14 +14,20 @@
             "email": "gregoriohc@gmail.com",
             "homepage": "https://github.com/gregoriohc",
             "role": "Developer"
-        }
+        },
+        {
+            "name": "Marco Antonio Ramírez Solís",
+            "email": "marco.ramirez@rzerocorp.com",
+            "homepage": "https://github.com/RZEROSTERN",
+            "role": "Maintainer"
+        },
     ],
     "require": {
         "php": "~7.0",
         "gregoriohc/byname": "^1.0.1",
         "gregoriohc/laravel-castable": "~2.0",
         "gregoriohc/laravel-seedable": "~1.0",
-        "spatie/laravel-translatable": "^2.1"
+        "spatie/laravel-translatable": "3.1.3"
     },
     "require-dev": {
         "phpunit/phpunit" : ">=4.0",
