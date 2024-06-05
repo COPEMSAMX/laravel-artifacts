@@ -20,7 +20,7 @@
             "email": "marco.ramirez@rzerocorp.com",
             "homepage": "https://github.com/RZEROSTERN",
             "role": "Maintainer"
-        },
+        }
     ],
     "require": {
         "php": "^8.0",
