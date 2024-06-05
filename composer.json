@@ -1,9 +1,9 @@
 {
-    "name": "gregoriohc/laravel-artifacts",
+    "name": "copemsamx/laravel-artifacts",
     "type": "library",
     "description": "Laravel common files used on some of my projects",
     "keywords": [
-        "gregoriohc",
+        "copemsamx",
         "laravel-artifacts"
     ],
     "homepage": "https://github.com/COPEMSAMX/laravel-artifacts",
@@ -23,7 +23,7 @@
         },
     ],
     "require": {
-        "php": "~7.0",
+        "php": "^8.0",
         "gregoriohc/byname": "^1.0.1",
         "gregoriohc/laravel-castable": "~2.0",
         "gregoriohc/laravel-seedable": "~1.0",
