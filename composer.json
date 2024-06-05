@@ -25,7 +25,7 @@
     "require": {
         "php": "^8.0",
         "gregoriohc/byname": "^1.0.1",
-        "gregoriohc/laravel-castable": "~2.0",
+        "gregoriohc/laravel-castable": "~3.0",
         "gregoriohc/laravel-seedable": "~1.0",
         "spatie/laravel-translatable": "3.1.3"
     },
