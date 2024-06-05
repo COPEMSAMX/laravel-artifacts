@@ -26,7 +26,7 @@
         "php": "^8.0",
         "gregoriohc/byname": "^1.0.1",
         "gregoriohc/laravel-castable": "~3.0",
-        "gregoriohc/laravel-seedable": "~1.0",
+        "copemsamx/laravel-seedable": "dev-master",
         "spatie/laravel-translatable": "6.7.1"
     },
     "require-dev": {
